@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>3D Modelling Software</title>
+  </head>
+  <body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+      Please use a browser that supports canvas
+    </canvas>
+
+    <div id="Primitives" style="display: flex">
+      <button type="button" id="cube">Cube</button>
+      <button type="button" id="plane">Plane</button>
+      <button type="button" id="pyramid">Pyramid</button>
+    </div>
+
+    <div id="sliders" style="display: flex">
+      <div id="posSliders">
+        <p id="posXLabel">Pos X: 0</p>
+        <input type="range" min="-99" max="99" value="0" class="slider" id="posX">
+        <p id="posYLabel">Pos Y: 0</p>
+        <input type="range" min="-99" max="99" value="0" class="slider" id="posY">
+        <p id="posZLabel">Pos Z: 0</p>
+        <input type="range" min="-99" max="99" value="0" class="slider" id="posZ">
+      </div>
+      <div id="rotSliders">
+        <p id="rotXLabel">Rot X: 0</p>
+        <input type="range" min="-360" max="360" value="0" class="slider" id="rotX">
+        <p id="rotYLabel">Rot Y: 0</p>
+        <input type="range" min="-360" max="360" value="0" class="slider" id="rotY">
+        <p id="rotZLabel">Rot Z: 0</p>
+        <input type="range" min="-360" max="360" value="0" class="slider" id="rotZ">
+      </div>
+      <div id="scaleSliders">
+        <p id="scaleXLabel">Scale X: 0</p>
+        <input type="range" min="10" max="400" value="100" class="slider" id="scaleX">
+        <p id="scaleYLabel">Scale Y: 0</p>
+        <input type="range" min="10" max="400" value="100" class="slider" id="scaleY">
+        <p id="scaleZLabel">Scale Z: 0</p>
+        <input type="range" min="10" max="400" value="100" class="slider" id="scaleZ">
+      </div>
+    </div>
+
+    <script src="lib/webgl-utils.js"></script>
+    <script src="lib/webgl-debug.js"></script>
+    <script src="lib/cuon-utils.js"></script>
+    <script src="lib/cuon-matrix.js"></script>
+    <script src="Partial1.js"></script>
+  </body>
+</html>
