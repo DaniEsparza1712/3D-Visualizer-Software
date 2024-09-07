@@ -26,17 +26,14 @@ class vectorThree{
     this.y = y;
     this.z = z;
   }
-
-  printVector(){
-    console.log("X: " + this.x + " Y: " + this.y + " Z: " + this.z);
-  }
 }
 
 class figure{
-  constructor(vertices, indices, colors) {
+  constructor(vertices, indices, colors, figType) {
     this.vertices = vertices;
     this.indices = indices;
     this.colors = colors;
+    this.figType = figType;
 
     this.pos = new vectorThree(0, 0, 0);
     this.rot = new vectorThree(0, 0, 0);
@@ -60,6 +57,29 @@ var currentFigure;
 var figures = [];
 var currentFigIndex;
 
+var colorPicker;
+
+var sliderPosX;
+var fieldPosX;
+var sliderPosY;
+var fieldPosY;
+var sliderPosZ;
+var fieldPosZ;
+
+var sliderRotX;
+var fieldRotX;
+var sliderRotY;
+var fieldRotY;
+var sliderRotZ;
+var fieldRotZ;
+
+var sliderScaleX;
+var fieldScaleX;
+var sliderScaleY;
+var fieldScaleY;
+var sliderScaleZ;
+var fieldScaleZ;
+
 function main(){
   var canvas = document.getElementById('webgl');
   var gl = getWebGLContext(canvas);
@@ -77,90 +97,314 @@ function main(){
   gl.clearColor(0.0,0.0,0.0,1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
+  //Get document elements
+  colorPicker = document.getElementById("colorPicker");
+
+  //Set color picker function so that the current figure changes color with it
+  colorPicker.oninput = function () {
+    changeCurrentFigColor(gl);
+  }
+
   //Set button functions
   document.getElementById("cube").onclick = function (){createCube(gl);};
   document.getElementById("plane").onclick = function () {createPlane(gl);};
   document.getElementById("pyramid").onclick = function () {createPyramid(gl);};
+  document.getElementById("deleteBtn").onclick = function () {deleteFig(gl);};
 
   //Set position sliders
-  var sliderPosX = document.getElementById("posX");
+  sliderPosX = document.getElementById("posX");
+  fieldPosX = document.getElementById("posXLabel");
   sliderPosX.oninput = function (){
+    if(!currentFigure)
+      return;
     posX = -this.value/100;
     currentFigure.pos.x = posX;
-    document.getElementById("posXLabel").innerHTML = "Pos X: " + posX;
+    fieldPosX.value = -posX;
     draw(gl)
-    currentFigure.pos.printVector()
+  }
+  fieldPosX.oninput = function (){
+    if(!currentFigure)
+      return;
+    posX = -this.value;
+    currentFigure.pos.x = posX;
+    sliderPosX.value = -posX*100;
+    draw(gl);
   }
 
-  var sliderPosY = document.getElementById("posY");
+  sliderPosY = document.getElementById("posY");
+  fieldPosY = document.getElementById("posYLabel");
   sliderPosY.oninput = function (){
+    if(!currentFigure)
+      return;
     posY = this.value/100;
     currentFigure.pos.y = posY;
-    document.getElementById("posYLabel").innerHTML = "Pos Y: " + posY;
+    fieldPosY.value = posY;
     draw(gl)
   }
+  fieldPosY.oninput = function (){
+    if(!currentFigure)
+      return;
+    posY = this.value;
+    currentFigure.pos.y = posY;
+    sliderPosY.value = posY*100;
+    draw(gl);
+  }
 
-  var sliderPosZ = document.getElementById("posZ");
+  sliderPosZ = document.getElementById("posZ");
+  fieldPosZ = document.getElementById("posZLabel");
   sliderPosZ.oninput = function (){
+    if(!currentFigure)
+      return;
     posZ = this.value/100;
     currentFigure.pos.z = posZ;
-    document.getElementById("posZLabel").innerHTML = "Pos Z: " + posZ;
+    fieldPosZ.value = posZ;
     draw(gl)
+  }
+  fieldPosZ.oninput = function (){
+    if(!currentFigure)
+      return;
+    posZ = this.value;
+    currentFigure.pos.z = posZ;
+    sliderPosY.value = posZ*100;
+    draw(gl);
   }
 
   //Set rotation sliders
-  var sliderRotX = document.getElementById("rotX");
+  sliderRotX = document.getElementById("rotX");
+  fieldRotX = document.getElementById("rotXLabel");
   sliderRotX.oninput = function (){
+    if(!currentFigure)
+      return;
     rotX = this.value;
     currentFigure.rot.x = rotX;
-    document.getElementById("rotXLabel").innerHTML = "Rotation X: " + rotX;
+    fieldRotX.value = rotX;
+    draw(gl)
+  }
+  fieldRotX.oninput = function (){
+    if(!currentFigure)
+      return;
+    rotX = this.value;
+    currentFigure.rot.x = rotX;
+    sliderRotX.value = rotX;
     draw(gl)
   }
 
-  var sliderRotY = document.getElementById("rotY");
+  sliderRotY = document.getElementById("rotY");
+  fieldRotY = document.getElementById("rotYLabel");
   sliderRotY.oninput = function (){
+    if(!currentFigure)
+      return;
     rotY = this.value;
     currentFigure.rot.y = rotY;
-    document.getElementById("rotYLabel").innerHTML = "Rotation Y: " + rotY;
+    fieldRotX.value = rotY;
+    draw(gl)
+  }
+  fieldRotY.oninput = function (){
+    if(!currentFigure)
+      return;
+    rotY = this.value;
+    currentFigure.rot.y = rotY;
+    sliderRotY.value = rotY;
     draw(gl)
   }
 
-  var sliderRotZ = document.getElementById("rotZ");
+  sliderRotZ = document.getElementById("rotZ");
+  fieldRotZ = document.getElementById("rotZLabel");
   sliderRotZ.oninput = function (){
+    if(!currentFigure)
+      return;
     rotZ = this.value;
     currentFigure.rot.z = rotZ;
-    document.getElementById("rotZLabel").innerHTML = "Rotation Z: " + rotZ;
+    fieldRotZ.value = rotZ;
+    draw(gl)
+  }
+  fieldRotZ.oninput = function (){
+    if(!currentFigure)
+      return;
+    rotZ = this.value;
+    currentFigure.rot.z = rotZ;
+    sliderRotZ.value = rotZ;
     draw(gl)
   }
 
   //Set scale sliders
-  var sliderScaleX = document.getElementById("scaleX");
+  sliderScaleX = document.getElementById("scaleX");
+  fieldScaleX = document.getElementById("scaleXLabel");
   sliderScaleX.oninput = function (){
+    if(!currentFigure)
+      return;
     scaleX = this.value/100;
     currentFigure.scale.x = scaleX;
-    document.getElementById("scaleXLabel").innerHTML = "Scale X: " + scaleX;
+    fieldScaleX.value = scaleX;
+    draw(gl)
+  }
+  fieldScaleX.oninput = function (){
+    if(!currentFigure)
+      return;
+    scaleX = this.value;
+    currentFigure.scale.x = scaleX;
+    sliderScaleX.value = scaleX*100;
     draw(gl)
   }
 
-  var sliderScaleY = document.getElementById("scaleY");
+  sliderScaleY = document.getElementById("scaleY");
+  fieldScaleY = document.getElementById("scaleYLabel");
   sliderScaleY.oninput = function (){
+    if(!currentFigure)
+      return;
     scaleY = this.value/100;
     currentFigure.scale.y = scaleY;
-    document.getElementById("scaleYLabel").innerHTML = "Scale Y: " + scaleY;
+    fieldScaleY.value =scaleY;
+    draw(gl)
+  }
+  fieldScaleY.oninput = function (){
+    if(!currentFigure)
+      return;
+    scaleY = this.value;
+    currentFigure.scale.y = scaleY;
+    sliderScaleY.value = scaleY*100;
     draw(gl)
   }
 
-  var sliderScaleZ = document.getElementById("scaleZ");
+  sliderScaleZ = document.getElementById("scaleZ");
+  fieldScaleZ = document.getElementById("scaleZLabel");
   sliderScaleZ.oninput = function (){
+    if(!currentFigure)
+      return;
     scaleZ = this.value/100;
     currentFigure.scale.z = scaleZ;
-    document.getElementById("scaleZLabel").innerHTML = "Scale Z: " + scaleZ;
+    fieldScaleZ.value = scaleZ;
     draw(gl)
   }
+  fieldScaleZ.oninput = function (){
+    if(!currentFigure)
+      return;
+    scaleZ = this.value;
+    currentFigure.scale.z = scaleZ;
+    sliderScaleZ.value = scaleZ*100;
+    draw(gl)
+  }
+  resetParams();
+}
 
+function resetParams(){
+
+  //Reset Position Sliders
+  sliderPosX.value = 0;
+  fieldPosX.value = 0;
+  sliderPosY.value = 0;
+  fieldPosY.value = 0;
+  sliderPosZ.value = 0;
+  fieldPosZ.value = 0;
+
+  //Reset Rotation Sliders
+  sliderRotX.value = 0;
+  fieldRotX.value = 0;
+  sliderRotY.value = 0;
+  fieldRotY.value = 0;
+  sliderRotZ.value = 0;
+  fieldRotZ.value = 0;
+
+  //Reset Scale Sliders
+  sliderScaleX.value = 100;
+  fieldScaleX.value = 1;
+  sliderScaleY.value = 100;
+  fieldScaleY.value = 1;
+  sliderScaleZ.value = 100;
+  fieldScaleZ.value = 1;
+}
+
+function setParams(){
+  var fig = currentFigure;
+
+  const pos = fig.pos;
+  //Reset Position Sliders
+  sliderPosX.value = pos.x;
+  fieldPosX.value = pos.x;
+  sliderPosY.value = pos.y;
+  fieldPosY.value = pos.y;
+  sliderPosZ.value = pos.z;
+  fieldPosZ.value = pos.z;
+
+  const rot = fig.rot;
+  //Reset Rotation Sliders
+  sliderRotX.value = rot.x;
+  fieldRotX.value = rot.x;
+  sliderRotY.value = rot.y;
+  fieldRotY.value = rot.y;
+  sliderRotZ.value = rot.z;
+  fieldRotZ.value = rot.z;
+
+  const scale = fig.scale;
+  //Reset Scale Sliders
+  sliderScaleX.value = scale.x * 100;
+  fieldScaleX.value = scale.x;
+  sliderScaleY.value = scale.y * 100;
+  fieldScaleY.value = scale.y;
+  sliderScaleZ.value = scale.z * 100;
+  fieldScaleZ.value = scale.z;
+}
+
+function changeCurrentFigColor(gl){
+  if(currentFigure){
+    const hexColor = colorPicker.value;
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexColor);
+    const figColor = new vectorThree(parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16),);
+    for(var i = 0; i < currentFigure.colors.length; i += 3){
+      currentFigure.colors[i] = figColor.x / (255 + Math.floor(Math.random() * 100));
+      currentFigure.colors[i + 1] = figColor.y / (255 + Math.floor(Math.random() * 100));
+      currentFigure.colors[i + 2] = figColor.z / (255 + Math.floor(Math.random() * 100));
+    }
+    draw(gl);
+  }
+}
+
+function addFig(fig){
+  figures.push(fig);
+  currentFigIndex = figures.length - 1;
+  selectFig(currentFigIndex);
+}
+
+function selectFig(index){
+  currentFigIndex = index;
+  currentFigure = figures[currentFigIndex];
+}
+
+function generateFigBtns(){
+  const container = document.getElementById("figContainer");
+  container.textContent = "";
+}
+
+function deleteFig(gl){
+  figures.splice(currentFigIndex, 1);
+  generateFigBtns();
+  draw(gl);
+  if(figures.length > 0){
+    selectFig(figures.length - 1);
+    for(var i = 0; i < figures.length; i++){
+      createFigBtn(i, figures[i].figType);
+    }
+  }
+}
+
+function createFigBtn(index, name){
+  const figBtn = document.createElement("button");
+  figBtn.type = "button"
+  figBtn.innerHTML = index + ": " + name;
+  figBtn.style = "width: 100%;";
+  figBtn.onclick = function () {
+    selectFig(index);
+    setParams();
+  }
+  const container = document.getElementById("figContainer");
+  container.appendChild(figBtn);
 }
 
 function createCube(gl){
+  resetParams();
+
   //Creating cubes with help from ChatGPT
   var cubeVertices = [
     - 0.1,  - 0.1,  + 0.1,
@@ -193,15 +437,14 @@ function createCube(gl){
     Math.random(), Math.random(), Math.random(),
   ];
 
-  var cube = new figure(cubeVertices, cubeIndices, cubeColors);
-  currentFigure = cube;
-  figures.push(cube);
-  console.log(figures.length);
-
-  draw(gl);
+  const cube = new figure(cubeVertices, cubeIndices, cubeColors, "Cube");
+  addFig(cube);
+  createFigBtn(figures.length - 1, cube.figType);
+  changeCurrentFigColor(gl);
 }
 
 function createPlane(gl){
+  resetParams();
   var planeVertices = [
     - 0.1,  0,  + 0.1,
     + 0.1,  0,  + 0.1,
@@ -220,15 +463,14 @@ function createPlane(gl){
     Math.random(), Math.random(), Math.random()
   ];
 
-  var plane = new figure(planeVertices, planeIndices, planeColors);
-  currentFigure = plane;
-  figures.push(plane);
-  console.log(figures.length);
-
-  draw(gl);
+  var plane = new figure(planeVertices, planeIndices, planeColors, "Plane");
+  addFig(plane);
+  createFigBtn(figures.length - 1, plane.figType);
+  changeCurrentFigColor(gl);
 }
 
 function createPyramid(gl){
+  resetParams();
   var pyramidVertices = [
     - 0.1,  - 0.1,  + 0.1,
     + 0.1,  - 0.1,  + 0.1,
@@ -254,12 +496,10 @@ function createPyramid(gl){
     Math.random(), Math.random(), Math.random(),
   ];
 
-  var pyramid = new figure(pyramidVertices, pyramidIndices, pyramidColors);
-  currentFigure = pyramid;
-  figures.push(pyramid);
-  console.log(figures.length);
-
-  draw(gl);
+  var pyramid = new figure(pyramidVertices, pyramidIndices, pyramidColors, "Pyramid");
+  addFig(pyramid);
+  createFigBtn(figures.length - 1, pyramid.figType);
+  changeCurrentFigColor(gl);
 }
 
 function initVertexBuffers(gl, vertices, colors, fig){
@@ -326,18 +566,6 @@ function initVertexBuffers(gl, vertices, colors, fig){
 }
 
 function draw(gl){
-
-  /*
-  initVertexBuffers(gl, new Float32Array(currentFigure.vertices), new Float32Array(currentFigure.colors), currentFigure);
-
-  var indexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(currentFigure.indices), gl.STATIC_DRAW);
-
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.drawElements(gl.TRIANGLES, currentFigure.indices.length, gl.UNSIGNED_SHORT, 0);
-  */
-
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   for(var i = 0; i < figures.length; i++){
