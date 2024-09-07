@@ -196,7 +196,7 @@ function main(){
       return;
     rotY = this.value;
     currentFigure.rot.y = rotY;
-    fieldRotX.value = rotY;
+    fieldRotY.value = rotY;
     draw(gl)
   }
   fieldRotY.oninput = function (){
