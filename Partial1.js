@@ -20,6 +20,7 @@ var FSHADER_SOURCE =`
   }
 `;
 
+//Used for easily defining positions, rotations and scales
 class vectorThree{
   constructor(x, y, z) {
     this.x = x;
@@ -28,6 +29,7 @@ class vectorThree{
   }
 }
 
+//Class for constructing primitive elements
 class figure{
   constructor(vertices, indices, colors, figType) {
     this.vertices = vertices;
@@ -111,7 +113,7 @@ function main(){
   document.getElementById("pyramid").onclick = function () {createPyramid(gl);};
   document.getElementById("deleteBtn").onclick = function () {deleteFig(gl);};
 
-  //Set position sliders
+  //Set functionality for position sliders and fields
   sliderPosX = document.getElementById("posX");
   fieldPosX = document.getElementById("posXLabel");
   sliderPosX.oninput = function (){
@@ -169,7 +171,7 @@ function main(){
     draw(gl);
   }
 
-  //Set rotation sliders
+  //Set functionality for rotation sliders and fields
   sliderRotX = document.getElementById("rotX");
   fieldRotX = document.getElementById("rotXLabel");
   sliderRotX.oninput = function (){
@@ -227,7 +229,7 @@ function main(){
     draw(gl)
   }
 
-  //Set scale sliders
+  //Set functionality for scale sliders and fields
   sliderScaleX = document.getElementById("scaleX");
   fieldScaleX = document.getElementById("scaleXLabel");
   sliderScaleX.oninput = function (){
@@ -287,6 +289,7 @@ function main(){
   resetParams();
 }
 
+//Resets position, rotation and scale inputs to default values
 function resetParams(){
 
   //Reset Position Sliders
@@ -314,6 +317,7 @@ function resetParams(){
   fieldScaleZ.value = 1;
 }
 
+//Sets position, rotation and scale input values to that of the current figure
 function setParams(){
   var fig = currentFigure;
 
@@ -345,6 +349,8 @@ function setParams(){
   fieldScaleZ.value = scale.z;
 }
 
+//Converts the hex color from the color picker to rgb and assigns it to the color matrix of the current figure
+//Adds a small random factor to the color in each vertex so that the three dimensions of the object are better appreciated
 function changeCurrentFigColor(gl){
   if(currentFigure){
     const hexColor = colorPicker.value;
@@ -361,34 +367,40 @@ function changeCurrentFigColor(gl){
   }
 }
 
+//Adds a figure to the figures list and selects it
 function addFig(fig){
   figures.push(fig);
   currentFigIndex = figures.length - 1;
   selectFig(currentFigIndex);
 }
 
+//Selects the figure from the list with the given index
 function selectFig(index){
   currentFigIndex = index;
   currentFigure = figures[currentFigIndex];
+  setParams()
 }
 
+//Generates buttons for all figures in the list
 function generateFigBtns(){
   const container = document.getElementById("figContainer");
   container.textContent = "";
-}
-
-function deleteFig(gl){
-  figures.splice(currentFigIndex, 1);
-  generateFigBtns();
-  draw(gl);
-  if(figures.length > 0){
-    selectFig(figures.length - 1);
-    for(var i = 0; i < figures.length; i++){
-      createFigBtn(i, figures[i].figType);
-    }
+  for(var i = 0; i < figures.length; i++){
+    createFigBtn(i, figures[i].figType);
   }
 }
 
+//Deletes the selected figure
+function deleteFig(gl){
+  figures.splice(currentFigIndex, 1);
+  generateFigBtns();
+  if(figures.length > 0){
+    selectFig(figures.length - 1);
+  }
+  draw(gl);
+}
+
+//Creates a button for selecting a figure
 function createFigBtn(index, name){
   const figBtn = document.createElement("button");
   figBtn.type = "button"
@@ -402,6 +414,7 @@ function createFigBtn(index, name){
   container.appendChild(figBtn);
 }
 
+//Creates a cube, adds it to the figures list, a button for selecting it and sets its color to the one on the color picker
 function createCube(gl){
   resetParams();
 
@@ -443,6 +456,7 @@ function createCube(gl){
   changeCurrentFigColor(gl);
 }
 
+//Creates a plane, adds it to the figures list, a button for selecting it and sets its color to the one on the color picker
 function createPlane(gl){
   resetParams();
   var planeVertices = [
@@ -469,6 +483,7 @@ function createPlane(gl){
   changeCurrentFigColor(gl);
 }
 
+//Creates a pyramid, adds it to the figures list, a button for selecting it and sets its color to the one on the color picker
 function createPyramid(gl){
   resetParams();
   var pyramidVertices = [
